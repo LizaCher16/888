@@ -47,13 +47,23 @@ func TestAddGetDelete(t *testing.T) {
 	parcel.Number = id
 
 	// get
-	stored, err := store.Get(id)
+	// Функция Equal может сравнивать структуры сразу (а не по полям), надо только с полем Number разобраться.
+
+	//Нужно переделать, так как при таком подходе при изменении структуры нужно будет менять все тесты
+	parcel.Number = id
+
+	actual, err := store.Get(id)
+	require.NoError(t, err)
+
+	//  целиком
+	require.Equal(t, parcel, actual)
+	/*stored, err := store.Get(id)
 	require.NoError(t, err)
 
 	require.Equal(t, parcel.Client, stored.Client)
 	require.Equal(t, parcel.Status, stored.Status)
 	require.Equal(t, parcel.Address, stored.Address)
-
+	*/
 	// delete
 	err = store.Delete(id)
 	require.NoError(t, err)
@@ -170,11 +180,12 @@ func TestGetByClient(t *testing.T) {
 		// убедитесь, что значения полей полученных посылок заполнены верно
 		original, ok := parcelMap[parcel.Number]
 		require.True(t, ok, "посылка %d не найдена в map", parcel.Number)
-
-		require.Equal(t, original.Client, parcel.Client)
+		require.Equal(t, original, parcel)
+		/*require.Equal(t, original.Client, parcel.Client)
 		require.Equal(t, original.Status, parcel.Status)
 		require.Equal(t, original.Address, parcel.Address)
 		require.Equal(t, original.CreatedAt, parcel.CreatedAt)
+		*/
 	}
 
 }
